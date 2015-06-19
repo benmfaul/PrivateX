@@ -1,0 +1,1 @@
+http://docs.phonegap.com/en/1.0.0/phonegap_geolocation_geolocation.md.html#geolocation.getCurrentPosition

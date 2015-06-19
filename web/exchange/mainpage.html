@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="Details how to build and operate the RTB bidding engine."
+    name="description">
+    <meta content="RTB,OpenRTB,JAVA,Advertising,real-time, Exchange, DSP" name="keywords">
+    <meta content="RTB4FREE" name="author">
+
+    <title>RTB4FREE PVTX</title><!-- Latest compiled and minified CSS -->
+    <link href=
+    "http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel=
+    "stylesheet"><!-- jQuery library -->
+
+    <script src=
+    "https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><!-- Latest compiled JavaScript -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-5532985-4', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head>
+
+<body>
+    <nav class="navbar navbar-fixed-top navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" data-target="#navbar"
+                data-toggle="collapse" type="button"><span class=
+                "sr-only">Toggle navigation</span> <span class=
+                "icon-bar"></span> <span class="icon-bar"></span> <span class=
+                "icon-bar"></span></button> <a class="navbar-brand" href=
+                "#">RTB For Free!</a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="http://rtb4free.com/index.html">Home</a>
+                    </li>
+
+                    <li>
+                        <a href="about.html">About</a>
+                    </li>
+
+                    <li>
+                        <a href="contact.html">Contact</a>
+                    </li>
+                </ul>
+            </div><!-- /.nav-collapse -->
+        </div><!-- /.container -->
+    </nav><!-- /.navbar -->
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+            	<br/></br><a id="TOP"></a>
+                <h1>RTB4FREE Private Exchange</h1><i>(NOTE: THIS IS A WORK IN
+                PROGRESS)</i><br>
+
+                <p>A Real Time Broker (RTB) 2  Private Exchange written in Java
+                1.8</p>
+
+                <p>The RTB4FREE private exchange allows you to test real time auctions of mobile inventory. Use this
+                code to learn how RTB exchanges work, or use as the basis for your own exchange. With this simple
+                exchange campaigns are created for web publishers. You also create subscribers for DSPs (like RTB4FREE) to
+                bid on auctioned web page space. When the web user loads the test web page, the private exchange
+                creates an auction, and the DSP subscribers are sent bid requests. In this case, the DSP connected to
+                the private exchange on this web site is RTB4FREE, which has a sample campaign loaded.</p>
+                <p>After the DSP bids on the auction, the private exchange chooses a winner, and the ad is returned to the
+                web page the user has loaded.</p>
+                <p>The following are the parts of the PVTX system:</p>
+
+                <ul>
+                    <li>
+                        <a href="#PUBLISHER">Publisher's Campaign</a>
+                    </li>
+                    <li>
+                    <a href="#BIDDING">Subscribing DSP</a>
+                    </li>
+                    <li>
+                        <a href="#WEBPAGE">Web Page Space for Sale</a>
+                    </li>
+
+                    <li>
+                        <a href="#AUCTION">Auction</a>
+                    </li>
+
+                    <li>
+                        <a href="#DISPLAY">Display the Advertisement</a>
+                    </li>
+
+                    <li>
+                        <a href="#SETTLEMENT">Settlement</a>
+                    </li>
+                </ul>
+
+                <nav>
+                    <ul class="pager">
+                        <li>
+                            <a href="arch/RTB_architecture_mod3.html" target=
+                            "_blank">Architecture Slides</a>
+                        </li>
+
+                        <li>
+                            <a href="Configuration of Publishers" target=
+                            "_blank">Javadoc Pages</a>
+                        </li>
+
+                        <li>
+                            <a href="html/index.html" target="_blank">Configuration of DSP</a>
+                        </li>
+                        <li>
+                            <a href="html/index.html" target="_blank">Source Code</a>
+                        </li>
+                    </ul>
+                </nav>
+                <h/r>
+                
+                <a id="PUBLISHER" name="BUILD"></a>
+                <h1>Publisher's Campaign</h1>
+                <p>Web publishers 'list' web site space for sale with the PVTX using a campaign. The campaign
+                specifies what the publisher is looking for in traffic. Size of the ad, device types, specific
+                IAB categories, etc. Each campaign has an id, which will be used in the auction to sell specific
+                web sites.
+                <a href="javascript:toggle('togglePubCamp');" id=
+                "displayText">Sample Campaign is Here</a></p>  
+                         
+                <div onclick="javascript:toggle('togglePubCamp');">
+                    <div id="togglePubCamp" style=
+                    "display:none; border-width:2px; border-style:solid">
+<pre>                   
+Publishers:
+{
+  "pubacct": {
+    "name": "Pubname",
+    "address": "PubAddress",
+    "telephoneNumber": "PubTel",
+    "campaigns": {
+      "campname": {
+        "price": 5.0,
+        "identifier": "campaign identifier here",
+        "served": 0,
+        "requested": 0,
+        "attributes": [
+          {
+            "name": "nodename",
+            "hierarchy": "a.b",
+            "operator": 1,
+            "value": "ben",
+            "sval": "ben",
+            "op": "EQUALS",
+            "notPresentOk": true,
+            "bidRequestValues": [
+              "a",
+              "b"
+            ]
+          }
+        ],
+        "impression": {
+          "id": "35c22289-06e2-48e9-a0cd-94aeb79fab43-1",
+          "instl": 0,
+          "banner": {
+            "h": 50,
+            "w": 320,
+            "pos": 0
+          },
+          "ext": {}
+        },
+        "cat": [
+          "IAB1",
+          "IAB2"
+        ],
+        "domain": "yourdomainhere.com",
+        "keywords": "football,mixed martial arts",
+        "ref": "http://www.iab.net",
+        "page": "yourdomainhere.com/football-and-mma.html"
+      }
+    }
+  }
+}
+                </pre>
+                </div>
+                </div>
+                
+                <br/><a href="#TOP">Back</a>    
+                   
+                <hr/>
+                <a id="BIDDING" name="BUILD"></a>
+                <h1>DSP Bidding</h1>
+                <p>DSPs offer to buy web properties by creating advertising campaigns with specific characteristics,
+                such as IAB categories, device types, location of user, etc. This way the DSP can programmtically target the
+                sale of their impressions.</p>
+                <p>In order to make bids, the DSP has to subscribe to the PVTX, specifying the URL for the DSP bidding engine, 
+                and the quality of service is  specified in the DSP. (Like max rate and max connections).
+                
+                <a href="javascript:toggle('toggleDspCamp');" id=
+                "displayText">Sample DSP Subscription is Here</a></p>  
+                         
+                <div onclick="javascript:toggle('toggleDspCamp');">
+                    <div id="toggleDspCamp" style=
+                    "display:none; border-width:2px; border-style:solid">
+<pre>                   
+Subscribers:
+[
+  {
+    "url": "http://rtb4free.com/bids/pvtx",
+    "accountNumber": "666-666-666",
+    "name": "RTB4Free Private Exchange",
+    "address": "3820 Del Amo Blvd, Suite 226, Torrance CA 90503",
+    "telephoneNumber": "310-878-4904",
+    "maxConnections": 10,
+    "maxRate": 100,
+  }
+]                
+                                </pre>
+                </div>
+                </div>
+                
+                
+                <br/><a href="#TOP">Back</a>
+                
+                <hr/>
+                <a id="WEBPAGE" name="BUILD"></a>
+                <h1>Web Page With Bid API</h1>
+                <p>The publisher web page is selling a piece of real estate on a web site, basically a DIV with a
+                specified ID. A JavaScript function is provided that does an HTTP post to the PVTX when the page loads. This way
+                the publisher page notifies PVTX the DIV tag is for sale.</p>
+                <p>The JavaScript function does the POST requesting an auction, the PVTX does the auction and returns the HTML
+                to display in the DIV innerHTML.</p>    
+                <br/><a href="#TOP">Back</a>    
+                
+                <hr/>
+                <a id="AUCTION" name="BUILD"></a>
+                <h1>Auction</h1>
+                <p>The following sequence describes the auction:</p>
+<ol>
+<li>Publisher creates an ad on a web page. A JavaScript API is used that identifies the space on the page 'for sale'.</li>
+<li>A Mobile user loads the page, and the JavaScript API sends to PVTX an HTTP post indicating an auction request.</li>
+<li>PVTX receives an ad request from the mobile device.</li>
+<li>DSPs have created subscriber accounts that indicate their willingness to bid on auctions.</li>
+<li>For each auction, PVTX concurrently makes an http POST request (Bid Request) to all subscriber DSPs.</li>
+<li>The DSPs are given up to 150ms to respond i.e. until the auction cut-off time</li>
+<li>DSPs failing to respond within the cut-off time do not get to participate in the auction and are considered late responses
+<li>All Bid Responses, in addition to being within the cut-off time must contain all required parameters including the ad markup (adm)</li>
+<li>PVTX applies its auction rules to all valid bid responses and conducts a second price auction</li>
+<li>PVTX notifies the winning bidder, and the as markup is requested from that bidder.</li>
+<li>PVTX sends the ad markup to the page the Mobile user loaded in the first place.</li>
+<li>PVTX notifies only the winning bidder when the impression is rendered (ad is displayed) via the Win Notification URL (nURL)</li>
+</ol>
+<br/><a href="#TOP">Back</a>
+                
+                <hr>
+                <a id="DISPLAY" name="BUILD"></a>
+                <h1>Display the Ad</h1>
+                <p>When the ad markup returns to the web page in the mobile user's browser, the JavaScript function that made the HTTP POST
+                request for the auction will then set the innerHTML of the div to the returned ad markup.
+                
+  <a href="javascript:toggle('toggleADM');" id=
+                "displayText">Sample ADM is Here</a></p>  
+                         
+                <div onclick="javascript:toggle('toggleADM');">
+                    <div id="toggleADM" style=
+                    "display:none; border-width:2px; border-style:solid">
+<pre>
+<xmp>
+   <a href=
+    'http://rtb4free.com:8080/redirect/ben:payday/nexage/35c22289-06e2-48e9-a0cd-94aeb79fab43?url=http://rtb4free.org:8080/forward?99201'>
+    <img height='1' src=
+    'http://rtb4free.com:8080/pixel/nexage/ben:payday/35c22289-06e2-48e9-a0cd-94aeb79fab43/${AUCTION_PRICE}/23skiddoo'
+    width='1'><img height='50.0' src=
+    'http://rtb4free.org:8080/images/320x50.jpg?adid=ben:payday&#38;bidid=35c22289-06e2-48e9-a0cd-94aeb79fab43'
+    width='320.0'></a>
+</xmp>
+</pre>
+</div>
+</div>
+                
+                <p>There are several key components of the ad markup</p>
+                <p>First is the anchor the 1x1 <i>pixel</i>. The HREF of this pixel anchor is an HTTP GET location that will 
+                identify the DSPs campaign-id, and the bid-id. This HREF fires when the image loads
+                in the browser. This tells the DSP the image actually loaded in the user's browser.</p>
+                <p>The second piece of the ad markup is the <i>redirect anchor</i>, whose HREF will be fired when the user clicks on the ad. This
+                GET fires to a specified HTTP location and passes the campaign-id and bid-id to the DSP. With this, the DSP knows
+                the user actually clicked on the advertisement</p>
+                <p>The final piece of the puzzle is in the publisher web page that will send an HTTP GET to the DSP with the campaign-id
+                and bid-id that indicates the mobile user actually hit the "Buy" button or equivalent. This way the DSP knows the ad
+                successfully converted into a purchase.</p>
+                <p>If you look at the <a href="javascript:toggle('toggleADM');" id=
+                "displayText">sample ADM</a> you will notice the macro {AUCTION_PRICE}. The exchange recognizes certain macros and
+                will substitute the appropriate values in the ADM before it is given to the mobile web site.</p>
+                <p>To see as the ADM as it is seen in the user's browser
+                
+                <a href="javascript:toggle('toggleIMAGE');" id=
+                "displayText"> look here.</a></p>  
+                         
+                    <div id="toggleIMAGE" style=
+                    "display:none; border-width:2px; border-style:solid">
+
+   <a href=
+    'http://rtb4free.com:8080/redirect/ben:payday/nexage/35c22289-06e2-48e9-a0cd-94aeb79fab43?url=http://rtb4free.org:8080/forward?99201'>
+    <img height='1' src=
+    'http://rtb4free.com:8080/pixel/nexage/ben:payday/35c22289-06e2-48e9-a0cd-94aeb79fab43/${AUCTION_PRICE}/23skiddoo'
+    width='1'><img height='50.0' src=
+    'http://rtb4free.org:8080/images/320x50.jpg?adid=ben:payday&#38;bidid=35c22289-06e2-48e9-a0cd-94aeb79fab43'
+    width='320.0'></a>
+
+</div>
+                
+                
+                <br/><a href="#TOP">Back</a>
+                
+                <hr>
+                <a id="SETTLEMENT" name="BUILD"></a>
+                <h1>Settling the Sale</h1>
+                <p>During the auction, the DSP is given notification of the win. The PVTX notifies the DSP of the cost of the sale
+                at this time. At this point in the auction process, the DSP will provide the pixel, click, and conversion
+                anchors, and when the pixel HREF fires, the DSP is notified of the cost of the sale.</p>
+                <br/><a href="#TOP">Back</a>
+                
+            </div>
+            
+                <footer>
+        <p>&copy; Ben M. Faul, Peter Loh, RTB4FREE.ORG 2015</p>
+        <p>Email: Ben.Faul@gmail.com</p>
+    </footer><br>
+        </div>
+    </div><br>
+    <br>
+
+    <script type="text/javascript">
+
+    function toggle(elementId) {
+    var ele = document.getElementById(elementId);
+    if(ele.style.display == "block") {
+            ele.style.display = "none";
+    }
+    else {
+        ele.style.display = "block";
+    }
+    } 
+
+    </script> <!-- Bootstrap core JavaScript
+    ================================================== -->
+     <!-- Placed at the end of the document so the pages load faster -->
+     <script src=
+    "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script> <script src="../../dist/js/bootstrap.min.js"></script> <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+     <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> <script src="offcanvas.js"></script>
+</body>
+</html>
