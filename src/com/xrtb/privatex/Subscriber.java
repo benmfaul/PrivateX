@@ -2,6 +2,7 @@ package com.xrtb.privatex;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.redisson.core.MessageListener;
 import org.redisson.core.RBucket;
@@ -9,6 +10,7 @@ import org.redisson.core.RCountDownLatch;
 import org.redisson.core.RList;
 import org.redisson.core.RTopic;
 
+import com.google.gson.Gson;
 import com.xrtb.common.HttpPostGet;
 import com.xrtb.pojo.BidRequest;
 import com.xrtb.privatex.br.PvtBidRequest;
@@ -30,7 +32,11 @@ public class Subscriber implements Runnable {
     String address;
     String telephoneNumber;
     int maxConnections;
-    int maxRate;
+    int maxRate = 0;
+    int sentOk = 0;
+    int errored = 0;
+    int bid = 0;
+    int noBid = 0;
     
     /** handles win notifications, returns ADM */
     List<String> uuids = new ArrayList<String>();           
@@ -42,6 +48,13 @@ public class Subscriber implements Runnable {
      */
 	public Subscriber() {
 		
+	}
+	
+	public static Subscriber instance(Map m) {
+		Gson gson = new Gson();
+		String s = gson.toJson(m);
+		Subscriber sub = gson.fromJson(s, Subscriber.class);
+		return sub;
 	}
 	
 	/**
@@ -105,36 +118,28 @@ public class Subscriber implements Runnable {
 	private void doRequest(Request r) {
 		String requestId = r.uuid;
 		RList list = (RList)Database.redisson.getList(requestId);
-		
-		PvtBidRequest br = new PvtBidRequest();
-		br.id = requestId;
-		br.imp.add(r.campaign.impression);
-		br.device.ua = r.ua;
-		br.device.geo.lat = r.loc.lat;
-		br.device.geo.lon = r.loc.lon;
-		br.site.cat = r.campaign.cat;
-		br.site.keywords = r.campaign.keywords;
-		br.device.ip = r.ipAddr;
+	
 		
 		String returns = "hello world";
-		String s = br.toString();
+		String s = r.br.toString();
 		System.out.println("--------------->"+s);
 		
 		try {
-		; //	returns = connection.sendPost("http://" + "XXX" + "/rtb/bids/nexage", s);
+			returns = connection.sendPost(url,r.br.toJson()); 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return;
 		}
 
-	//	if (connection.getResponseCode() != 204) {     /** NO BID */
+		if (connection.getResponseCode() == 200) {     /** LET'S BID */
 			Response response = new Response();
 			response.html = returns;
 			response.from = accountNumber;
 			list.add(response);
 			
 			// store the adm record
-	//	}			
+		} else {
+			System.err.println(returns);
+		}
 	}
 	
 	/**

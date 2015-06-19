@@ -7,10 +7,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
 import org.redisson.core.RBucket;
 import org.redisson.core.RCountDownLatch;
 import org.redisson.core.RList;
 import org.redisson.core.RTopic;
+
+import com.xrtb.privatex.br.PvtBidRequest;
 
 /**
  * A class that implements best price auction.
@@ -18,6 +23,8 @@ import org.redisson.core.RTopic;
  *
  */
 public class Auction implements Runnable {
+	/** Command object from the web page auction request */
+	Command cmd;
 	/** The campaign to use on the request */
 	Campaign campaign;
 	/** The user agent of the web user */
@@ -37,6 +44,9 @@ public class Auction implements Runnable {
 	/** The ADM html */
 	String html;
 	String ipAddr;
+	transient private ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+	PvtBidRequest pvt;
+	
 
 	/**
 	 * Creates and executes an auction.
@@ -45,11 +55,31 @@ public class Auction implements Runnable {
 	 * @param loc LatLong. The lat/long of the user.
 	 * @param ipAddr String. The IP address of the web user.
 	 */
-	public Auction(Campaign campaign, String ua, LatLong loc, String ipAddr) {
+	public Auction(Command cmd, Publisher publisher, Campaign campaign, String ipAddr) throws Exception {
+		this.cmd = cmd;
 		this.campaign = campaign;
-		this.ua = ua;
-		this.loc = loc;
 		this.ipAddr = ipAddr;
+		
+		pvt = new PvtBidRequest();
+		pvt.id = UUID.randomUUID().toString();
+		pvt.site.publisher.id = publisher.id;
+		pvt.site.publisher.name = publisher.name;
+		pvt.site.id = publisher.id;
+		pvt.site.name = publisher.name;
+		pvt.site.domain = publisher.domain;
+		
+		engine.put("cmd", cmd);
+		engine.put("request", pvt);
+		try {
+			engine.eval(campaign.getAttributesAsString());
+		} catch (Exception error) {
+			System.out.println(error.toString());
+			System.out.println(campaign.getAttributesAsString());
+			throw error;
+		}
+		
+		System.out.println(engine.get("request"));
+
 		me = new Thread(this);
 		me.start();
 	}
@@ -99,7 +129,7 @@ public class Auction implements Runnable {
 		
 		RTopic<Request> bidrequests = Database.redisson.getTopic("bidrequests");
 		
-		Request request = new Request(uuid, campaign, ua, loc, ipAddr);
+		Request request = new Request(uuid, pvt);
 		bidrequests.publish(request);
 
 		try {
@@ -126,7 +156,7 @@ public class Auction implements Runnable {
 		latch.trySetCount(1);
 		
 		Request req = new Request();
-		req.from =req.uuid = uuid;
+		req.uuid = uuid;
 				
 		RTopic topic = Database.redisson.getTopic(winner.from); /** Send the notification */
 		topic.publish(req);

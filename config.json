@@ -1,0 +1,23 @@
+{
+    "instance": "this-systems-instance-name-here",
+    "port": 9090,
+    "app": {
+        "connections": 100,
+        "ttl": 300,
+        "verbosity": {
+            "level": 2,
+            "nobid-reason": true
+        },
+        "redis": {
+            "host": "localhost",
+            "logger": "xlog",
+            "port": 6379
+        },
+        "campaigns": [
+            {
+                "accountNumber": "111-222-333",
+                "campaign": "TheSampleDemoCampaign"
+            }
+        ]
+    }
+}

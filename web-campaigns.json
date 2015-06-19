@@ -1,0 +1,51 @@
+{
+    "publishers": {
+        "111-222-333-444-555": {
+            "name": "Really Big Corp.",
+            "address": "the-address",
+            "telephoneNumber": "tel-number",
+            "id": "publisher-id",
+            "domain":"junk1.com",
+            "campaigns": {
+                "superdupertestcampaign": {
+                    "price": 10,
+                    "identifier": "superdupertestcampaign",
+                    "served": 0,
+                    "requested": 0,
+                    "page": "http://www.rtb4free/sample.html",
+                    "attributes": [
+                        "var Impression = Java.type('com.xrtb.privatex.br.Impression');",
+                        "var Banner = Java.type('com.xrtb.privatex.br.Banner');",
+                        "im = new Impression();",
+                        "im.id = request.id;",
+                        "im.instl = 0;",
+                        "im.banner = new Banner();",
+                        "im.banner.h = 50;",
+                        "im.banner.w = 320;",
+                        "im.banner.pos = 0;",
+                        "request.imp.add(im);",
+                        "request.device.ua =  cmd.ua;",
+                        "request.device.geo.lat = cmd.lat;",
+                        "request.device.geo.lon = cmd.lon;",
+                        "request.site.cat.add('IAB1');",
+                        "request.site.cat.add('IAB2');",
+                        "request.site.ext.rtb4free.platform=cmd.platform;",
+                        "request.site.ext.rtb4free.connectionType=cmd.connectionType;",
+                        "request.site.ext.rtb4free.maxDownLink=cmd.maxDownLink;"
+                    ]
+                }
+            }
+        }
+    },
+    "subscribers": [
+        {
+            "name": "the-name",
+            "address": "the-address",
+            "telephoneNumber": "tel-number",
+            "accountNumber": "account-number",
+            "url": "http://localhost:8080/rtb/bids/nexage",
+            "maxConnections": 100,
+            "maxRate": 1000
+        }
+    ]
+}

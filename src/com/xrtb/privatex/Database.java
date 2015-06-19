@@ -1,5 +1,15 @@
 package com.xrtb.privatex;
 
+import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import org.redisson.Config;
@@ -24,6 +34,12 @@ public class Database {
 	transient Config cfg = new Config();
 	transient Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+	int port = 9090;
+	String instanceName;
+	int logLevel = 2;
+	int connections = 10;
+	String redis = "localhost";
+	int redisHost = 6379;
 	/**
 	 * Used to create an initial database in Redisson.
 	 * @param args
@@ -37,9 +53,11 @@ public class Database {
 	}
 	
 	public void redo() throws Exception {
-		setup();
+		/*setup();
 		createPublisherStub();
-		createSubscriberStub();
+		createSubscriberStub(); */
+		
+		setup("web-campaigns.json");
 		printPublishers(); 
 		printSubscribers();  
 	}
@@ -55,10 +73,27 @@ public class Database {
 	 * Open the database using the supplied redis configuration host:port
 	 * @param redis String. host:port of the Redis server.
 	 */
-	public Database(String redis) {
+	public Database(String configFile) throws Exception {
+		
+		byte[] encoded = Files.readAllBytes(Paths.get(configFile));
+		String str = Charset.defaultCharset().decode(ByteBuffer.wrap(encoded)).toString();
+		
+		Map<?, ?> m = gson.fromJson(str,Map.class);
+		instanceName = (String)m.get("instance");
+		
+		m = (Map)m.get("app");
+		Map verbosity = (Map)m.get("verbosity");
+		if (verbosity != null) {
+			logLevel = ((Double)verbosity.get("level")).intValue();
+		}
+		if (m.get("connections")!=null) {
+			Double d = (Double)m.get("connections");
+			connections = d.intValue();
+		}
+		
 		cfg.useSingleServer()
-    	.setAddress(redis)
-    	.setConnectionPoolSize(10);
+    	.setAddress(redis + ":" + redisHost)
+    	.setConnectionPoolSize(connections);
 		setup();
 		System.out.println("Subscribers:");
 		printSubscribers();
@@ -68,6 +103,33 @@ public class Database {
 	
 	public void reset() {
 		setup();
+	}
+	
+	public void setup(String file) throws Exception {
+		redisson = Redisson.create();
+		publishers = redisson.getMap("publishers");	
+		subscribers = redisson.getList("subscribers");	
+		publishers.clear();
+		subscribers.clear();
+		
+		byte[] encoded = Files.readAllBytes(Paths.get(file));
+		String str = Charset.defaultCharset().decode(ByteBuffer.wrap(encoded)).toString();
+		Map<String,?> map = gson.fromJson(str,Map.class);
+
+		Map pubs = (Map)map.get("publishers");
+		Set set = pubs.entrySet();
+		Iterator it = set.iterator();
+		while(it.hasNext() ){
+			Entry e = (Entry)it.next();
+			Publisher p = Publisher.instance((Map)e.getValue());
+			publishers.put((String) e.getKey(), p);
+		}
+		
+		List<Map> subs = (List)map.get("subscribers");
+		for (Map x : subs) {
+			Subscriber s = Subscriber.instance(x);
+			subscribers.add(s);
+		}
 	}
 	
 	/**
@@ -94,6 +156,7 @@ public class Database {
 	 * Print the RTB exchange subscribers
 	 */
 	public void printSubscribers() {
+		System.out.println("Subscribers:");
 		System.out.println(gson.toJson(subscribers));
 	}
 	
@@ -101,59 +164,8 @@ public class Database {
 	 * Print the web content publishers
 	 */
 	public void printPublishers() {
+		System.out.println("Publishers:");
 		System.out.println(gson.toJson(publishers));
-	}
-	
-	/**
-	 * Create a stub subscriber
-	 */
-	public void createSubscriberStub() {
-		subscribers.clear();
-		Subscriber s = new Subscriber();
-		
-		s.url = "myurlhere";
-		s.accountNumber = "666-666-666";
-	    s.name = "Test Subscriber";
-	    s.address = "123 Anystreet, Anytown USA 12345";
-	    s.telephoneNumber = "555-1212";
-	    s.maxConnections = 10;
-	    s.maxRate = 100;
-	    subscribers.add(s);
-		
-	}
-	
-	/**
-	 * Create a stub publisher
-	 * @throws Exception
-	 */
-	public void createPublisherStub() throws Exception {
-		publishers.clear();
-		Publisher p = new Publisher();
-		p.name = "Pubname";
-		p.address = "PubAddress"; 
-		p.telephoneNumber = "PubTel";
-		
-		Campaign c = new Campaign();
-		c.price = 5.0;
-		c.domain = "yourdomainhere.com";
-		c.keywords = "football,mixed martial arts";
-		c.ref =  "http://www.iab.net";
-		c.page = "yourdomainhere.com/football-and-mma.html";
-
-		
-	    c.identifier = "campaign identifier here";
-	    c.impression.id = "35c22289-06e2-48e9-a0cd-94aeb79fab43-1";
-	    c.impression.instl = 0;
-	    c.impression.banner.w = 320;
-	    c.impression.banner.h = 50;    
-	    c.cat.add("IAB1");
-	    c.cat.add("IAB2");
-	    
-		
-		Node n = new Node("nodename", "a.b","EQUALS","ben");
-		c.attributes.add(n);
-		p.campaigns.put("campname",c);
-		publishers.put("pubacct", p);
 	}
 	
 	/**

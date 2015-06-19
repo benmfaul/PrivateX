@@ -1,6 +1,7 @@
 package com.xrtb.privatex;
 
 import com.xrtb.pojo.BidResponse;
+import com.xrtb.privatex.br.PvtBidRequest;
 
 /**
  * A class used to transmit bid requests and win notifications to a publisher object. This class
@@ -13,12 +14,8 @@ public class Request {
 	public static final int BIDREQUEST = 0;
 	public static final int WINNOTIFY = 1;
 	public int type;
-	String ipAddr;
+	public PvtBidRequest br;
 	String uuid;
-	Campaign campaign;
-	String ua;
-	LatLong loc;
-	String from;
 	String id;
 	double cost;
 	
@@ -47,12 +44,9 @@ public class Request {
 	 * @param ua String. The web site user agent.
 	 * @param loc LatLong. The web user's location.
 	 */
-	public Request(String uuid, Campaign campaign, String ua, LatLong loc, String ipAddr) {
+	public Request(String uuid, PvtBidRequest br) {
 		this.uuid = uuid;
-		this.campaign = campaign;
-		this.ua = ua;
-		this.loc = loc;
-		this.ipAddr = ipAddr;
+		this.br = br;
 		this.type = BIDREQUEST;
 	}
 }

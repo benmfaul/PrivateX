@@ -12,8 +12,8 @@ public class Site {
 	public String page; 
 	public String ref;
 	public String search;
-	public Publisher publisher;
-	public Ext ext;
+	public Publisher publisher = new Publisher();
+	public Ext ext = new Ext();
 
     public Site() {
     	

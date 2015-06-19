@@ -16,38 +16,46 @@ function RequestAuction(div,exchangeid,campaign,url) {
     this.campaignid = campaign;
     this.url = url;
     this.ua = navigator.userAgent;
-    this.location = {};
-    if (navigator.geolocation) {
-        this.location = navigator.geolocation.getCurrentPosition(function(position) {
-        	this.location.lat = position.coords.latitude;
-        	this.location.lon = position.coords.longitude;
-        });
-    } 
-}
-
-RequestAuction.prototype.getUA = function() {
-	return this.ua;
-}
-
-RequestAuction.prototype.getPosition = function() {
-	return this.location;
+    this.lat = 0;
+    this.lon = 0;
+    this.platform = navigator.platform;
 }
 
 RequestAuction.prototype.perform = function() {
+	var div = this.div;
 	var cmd = {};
 	cmd.ua = this.ua;
 	cmd.location = this.location;
 	cmd.accountNumber  = this.exchangeid;
 	cmd.campaign = this.campaignid;
-	var div = this.div;
-	div.innerHTML = "";
+	cmd.platform = this.platform;;
+	if (typeof navigator.connection != 'undefined') {
+		cmd.connectionType = navigator.connection.type;
+	 	cmd.maxDownLink = navigator.connection.downlinkMax;;
+	}
+	else {
+		cmd.connectionType = 'unk';
+		cmd.maxDownLink = -1.0;
+	}
+	var url = this.url;
+    if (typeof navigator.geolocation != 'undefined') {
+        navigator.geolocation.getCurrentPosition(function(position) {
+        	cmd.lat = position.coords.latitude;
+        	cmd.lon = position.coords.longitude;
+        	doAjax(url,cmd, div);
+        });
+    } else	
+		doAjax(url,cmd,div);
+}
+
+function doAjax(url,cmd,div) {
     $.ajax({
          type: 'POST',
-         url: this.url,
+         url: url,
          data: JSON.stringify(cmd),
          success: function(data, textStatus, request){
            if (request.status == 204) {
-           	text = "";
+           	alert("No bid returned, so nothing changes");
            	return;
            } else {
            	text = request.responseText;
@@ -61,15 +69,13 @@ RequestAuction.prototype.perform = function() {
 }
 
 function check() {
-	info = navigator.network;
-	alert(info);
 	ad.perform();
 }
 
-ad = new RequestAuction(document.getElementById("hello"),"pubacct","campname","http://localhost:8080/auction");
+ad = new RequestAuction(document.getElementById("hello"),"111-222-333-444-555","superdupertestcampaign","http://localhost:9090/auction").perform();
 	
 </script>
 
-<div id="hello"></div>
+<div id="hello">The Ad will Appear Here...</div>
 
 </html>

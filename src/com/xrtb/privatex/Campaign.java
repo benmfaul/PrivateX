@@ -1,26 +1,39 @@
 package com.xrtb.privatex;
 
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
 import com.xrtb.common.Node;
 import com.xrtb.privatex.br.Impression;
+import com.xrtb.privatex.br.PvtBidRequest;
 
 public class Campaign {
-	Double price;
-    String identifier;
+	 Double price;
+     String identifier;
     long served;
     long requested;
-	List<Node> attributes = new ArrayList();
-	Impression impression = new Impression();
-	List<String> cat = new ArrayList();
-	String domain = "rtb4free.com";
-	String keywords = "football,mixed martial arts";
-	String ref = "referenceid";
-	String page = "rtb4free.com/football-and-mma.html";
+	String page;
+	List<String> attributes;
+	transient String attributesAsString;
 	
 	public Campaign() {
 		
 	}
+	
+	public String getAttributesAsString() throws Exception {
+		if (attributesAsString == null) {
+			attributesAsString = "";
+			for (String s : attributes) {
+				attributesAsString += s + "\n";
+			}	
+		}
+		return attributesAsString;
+	}
+	
+	
 }
