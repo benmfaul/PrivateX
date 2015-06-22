@@ -1,4 +1,4 @@
-package com.xrtb.privatex.br;
+package com.xrtb.privatex.bidrequest;
 
 public class UserGeo {
 	public String country = "USA";

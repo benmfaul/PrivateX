@@ -14,4 +14,13 @@ public class Response {
 	public Response() {
 		
 	}
+	
+	public String toString() {
+		String s = "Response, \n" +
+					"\tFrom: " + from + "\n"+
+					"\tid: " + id + "\n" +
+					"\thtml: " + html + "\n" +
+					"\tprice: " + price;
+		return s;
+	}
 }

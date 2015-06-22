@@ -1,7 +1,7 @@
 package com.xrtb.privatex;
 
 import com.xrtb.pojo.BidResponse;
-import com.xrtb.privatex.br.PvtBidRequest;
+import com.xrtb.privatex.bidrequest.PvtBidRequest;
 
 /**
  * A class used to transmit bid requests and win notifications to a publisher object. This class

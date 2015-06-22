@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.redisson.core.MessageListener;
 import org.redisson.core.RBucket;
 import org.redisson.core.RCountDownLatch;
@@ -13,7 +14,9 @@ import org.redisson.core.RTopic;
 import com.google.gson.Gson;
 import com.xrtb.common.HttpPostGet;
 import com.xrtb.pojo.BidRequest;
-import com.xrtb.privatex.br.PvtBidRequest;
+import com.xrtb.privatex.bidrequest.PvtBidRequest;
+import com.xrtb.privatex.bidresponse.Bid;
+import com.xrtb.privatex.bidresponse.Body;
 
 /**
  * A class that handles RTB bid requests to subscribing RTB DSPs.
@@ -25,8 +28,10 @@ public class Subscriber implements Runnable {
 	transient RTopic winResponses;
 	transient Thread me;
 	transient HttpPostGet connection;
+	transient ObjectMapper mapper = new ObjectMapper();
 	
 	String url;
+
 	String accountNumber;
     String name;
     String address;
@@ -39,7 +44,7 @@ public class Subscriber implements Runnable {
     int noBid = 0;
     
     /** handles win notifications, returns ADM */
-    List<String> uuids = new ArrayList<String>();           
+    List<Response> winners = new ArrayList<Response>();           
     /** handles bid requests */
     List<Request> requests = new ArrayList<Request>();		
 
@@ -80,25 +85,27 @@ public class Subscriber implements Runnable {
 			}
 		});
 		
-		winResponses.addListener(new MessageListener<Request>() {
+		winResponses.addListener(new MessageListener<Response>() {
 
 			/**
 			 * Request to send bids
 			 */
 			@Override
-			public void onMessage(Request r) {
-				String from = r.uuid;
-				uuids.add(r.uuid);
-				
+			public void onMessage(Response r) {
+				winners.add(r);				
 			}
 		});
 		
 		while(true) {
 			try {
 				Thread.sleep(1);
-				if (uuids.size() > 0) {
-					String id = uuids.remove(0);
-				    doAdm(id);
+				if (winners.size() > 0) {
+					Response r = winners.remove(0);
+				    try {
+						doAdm(r);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				if (requests.size() > 0) {
 					Request r = requests.remove(0);
@@ -131,12 +138,15 @@ public class Subscriber implements Runnable {
 		}
 
 		if (connection.getResponseCode() == 200) {     /** LET'S BID */
+			System.out.println("GOOD BID RECEIVED FROM RTB!");
 			Response response = new Response();
 			response.html = returns;
 			response.from = accountNumber;
+			response.id = r.id;
 			list.add(response);
 			
 			// store the adm record
+			
 		} else {
 			System.err.println(returns);
 		}
@@ -146,19 +156,27 @@ public class Subscriber implements Runnable {
 	 * Handles the win notification by retrieving the ADM from the winning bid.
 	 * @param id String. The winning bid id.
 	 */
-	private void doAdm(String id) {
-		RBucket<String> bucket = Database.redisson.getBucket(id);
+	private void doAdm(Response r) throws Exception {
+		RBucket<String> bucket = Database.redisson.getBucket(r.id);
 		// Notify bidder of the win, retrieve the ADM, do the accounting
-		String adm  = "You are here";
+		
+		Body body = mapper.readValue(r.html,Body.class);
+		Bid bid = body.seatbid[0].bid[0];
+		
+		String adm = null;
 		try {
-		; //		returns = connection.sendPost(arg0, arg1);
+			String nurl = bid.nurl;
+			//String s[] = nurl.split("http");
+			//nurl = "http" + s[1];
+			adm = connection.sendGet(nurl);
+			System.out.println("ADM: " + adm);
 		} catch(Exception error) {
 			
 		}
 	
 		bucket.set(adm);
 		
-		RCountDownLatch latch = Database.redisson.getCountDownLatch("latch:"+id);
+		RCountDownLatch latch = Database.redisson.getCountDownLatch("latch:"+r.id);
 		latch.countDown();
 	}
 }

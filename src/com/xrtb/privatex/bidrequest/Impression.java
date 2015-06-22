@@ -1,4 +1,4 @@
-package com.xrtb.privatex.br;
+package com.xrtb.privatex.bidrequest;
 
 public class Impression {
    public  String id = "35c22289-06e2-48e9-a0cd-94aeb79fab43-1";

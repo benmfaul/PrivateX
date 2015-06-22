@@ -14,8 +14,8 @@
                     "requested": 0,
                     "page": "http://www.rtb4free/sample.html",
                     "attributes": [
-                        "var Impression = Java.type('com.xrtb.privatex.br.Impression');",
-                        "var Banner = Java.type('com.xrtb.privatex.br.Banner');",
+                        "var Impression = Java.type('com.xrtb.privatex.bidrequest.Impression');",
+                        "var Banner = Java.type('com.xrtb.privatex.bidrequest.Banner');",
                         "im = new Impression();",
                         "im.id = request.id;",
                         "im.instl = 0;",

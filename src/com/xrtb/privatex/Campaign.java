@@ -9,8 +9,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import com.xrtb.common.Node;
-import com.xrtb.privatex.br.Impression;
-import com.xrtb.privatex.br.PvtBidRequest;
+import com.xrtb.privatex.bidrequest.Impression;
+import com.xrtb.privatex.bidrequest.PvtBidRequest;
 
 public class Campaign {
 	 Double price;

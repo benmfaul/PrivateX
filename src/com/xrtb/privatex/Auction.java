@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -15,7 +16,10 @@ import org.redisson.core.RCountDownLatch;
 import org.redisson.core.RList;
 import org.redisson.core.RTopic;
 
-import com.xrtb.privatex.br.PvtBidRequest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.xrtb.privatex.bidrequest.PvtBidRequest;
+import com.xrtb.privatex.bidresponse.Body;
 
 /**
  * A class that implements best price auction.
@@ -132,17 +136,20 @@ public class Auction implements Runnable {
 		Request request = new Request(uuid, pvt);
 		bidrequests.publish(request);
 
+		System.out.println("==================> WAITING FOR RESPONSE!");
 		try {
 			Thread.yield();
-			Thread.sleep(100);
+			Thread.sleep(1000);
 		} catch (Exception error) {
 
 		}
+		System.out.println("===================>WAIT FOR RESPONSE TIMED OUT!");
 		r = Database.redisson.getList(uuid);
 		for (int i = 0; i < r.size(); i++) {
 			Response b = (Response) r.get(i);
 			bids.add(b);
 		}
+		System.out.println("================> NUMBER OF BIDS IN THE AUCTION NOW: " + bids.size());
 		r.deleteAsync();
 	}
 
@@ -153,16 +160,21 @@ public class Auction implements Runnable {
 	 */
 	public void notifyWinner(Response winner)  {
 		RCountDownLatch latch = Database.redisson.getCountDownLatch("latch:"+uuid);
+	//	System.out.println("HTML: " + winner.toString());
+		 Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		Map x = gson.fromJson(winner.html, Map.class);
+		System.out.println("MAP: " + gson.toJson(x));
+		
 		latch.trySetCount(1);
 		
-		Request req = new Request();
-		req.uuid = uuid;
+		winner.id = uuid;
 				
 		RTopic topic = Database.redisson.getTopic(winner.from); /** Send the notification */
-		topic.publish(req);
+		topic.publish(winner);                 // was req
 		try {
-			latch.await(250,TimeUnit.MILLISECONDS);
+			latch.await(1000,TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
+			System.out.println("===============> Winner did not respond!");
 			return;                          // sorry, winner timed out, no ad will be served.
 		}
 

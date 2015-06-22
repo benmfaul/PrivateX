@@ -19,8 +19,8 @@ import org.redisson.core.RList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.xrtb.common.Node;
-import com.xrtb.privatex.br.Banner;
-import com.xrtb.privatex.br.Impression;
+import com.xrtb.privatex.bidrequest.Banner;
+import com.xrtb.privatex.bidrequest.Impression;
 
 /**
  * A class to provide Redisson entry points, and to create initial databases.
@@ -30,6 +30,7 @@ import com.xrtb.privatex.br.Impression;
 public class Database {
 	static ConcurrentMap<String, Publisher> publishers;
 	static RList<Subscriber> subscribers;
+	public static ConcurrentMap<String, Response> candidates;
 	public static Redisson redisson;
 	transient Config cfg = new Config();
 	transient Gson gson = new GsonBuilder().setPrettyPrinting().create();
