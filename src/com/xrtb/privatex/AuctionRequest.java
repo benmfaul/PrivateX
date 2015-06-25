@@ -11,6 +11,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.xrtb.privatex.cfg.Database;
 
 /**
  * Request an auction for a web page ad.
@@ -43,13 +44,14 @@ public class AuctionRequest {
 	        System.arraycopy(buff, 0, tbuff, resultBuff.length, k);  // copy current lot
 	        resultBuff = tbuff; // call the temp buffer as your result buff
 	    }
+	    String x = new String(resultBuff);
 		
-		String x = new String(resultBuff);
-		Map<?, ?> m = gson.fromJson(x,Map.class);
-		System.out.println(gson.toJson(m));
+	    if (Database.logLevel >= 5) {
+	    	Map<?, ?> m = gson.fromJson(x,Map.class);
+	    	Database.log(5,"AUctionRequest/received message",gson.toJson(m));
+	    }
 		
 		Command cmd = mapper.readValue(x,Command.class);
-
 		
 		Publisher pub = Database.publishers.get(cmd.accountNumber);				/** Get the campaign id */
 		if (pub == null)
@@ -82,7 +84,7 @@ public class AuctionRequest {
 			return null;
 		while(auction.isDone()==false);
 		html = auction.process();
-		System.out.println("HTML: " + html);
+		Database.log(5,"AuctionRequest/process","Returning HTML" + html);
 		return html;
 	}
 }

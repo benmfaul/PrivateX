@@ -1,10 +1,12 @@
-package com.xrtb.privatex;
+package com.xrtb.privatex.cfg;
 
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -12,13 +14,19 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.redisson.Config;
 import org.redisson.Redisson;
 import org.redisson.core.RList;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.xrtb.bidder.LogPublisher;
+import com.xrtb.commands.LogMessage;
 import com.xrtb.common.Node;
+import com.xrtb.privatex.Publisher;
+import com.xrtb.privatex.Response;
+import com.xrtb.privatex.Subscriber;
 import com.xrtb.privatex.bidrequest.Banner;
 import com.xrtb.privatex.bidrequest.Impression;
 
@@ -28,19 +36,22 @@ import com.xrtb.privatex.bidrequest.Impression;
  *
  */
 public class Database {
-	static ConcurrentMap<String, Publisher> publishers;
+	public static ConcurrentMap<String, Publisher> publishers;
 	static RList<Subscriber> subscribers;
 	public static ConcurrentMap<String, Response> candidates;
 	public static Redisson redisson;
 	transient Config cfg = new Config();
 	transient Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	static LogPublisher loggerQueue;
 
-	int port = 9090;
-	String instanceName;
-	int logLevel = 2;
-	int connections = 10;
-	String redis = "localhost";
-	int redisHost = 6379;
+	public int port;
+	public static String instanceName;
+	public static int logLevel;
+	int connections;
+	String redis;
+	int redisPort;
+	String logName;
+	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	/**
 	 * Used to create an initial database in Redisson.
 	 * @param args
@@ -79,27 +90,47 @@ public class Database {
 		byte[] encoded = Files.readAllBytes(Paths.get(configFile));
 		String str = Charset.defaultCharset().decode(ByteBuffer.wrap(encoded)).toString();
 		
-		Map<?, ?> m = gson.fromJson(str,Map.class);
-		instanceName = (String)m.get("instance");
+		ObjectMapper mapper = new ObjectMapper();
+		com.xrtb.privatex.cfg.Config myConfig = mapper.readValue(str, com.xrtb.privatex.cfg.Config.class);
+		instanceName = myConfig.instance;
+		port = myConfig.port;
 		
-		m = (Map)m.get("app");
-		Map verbosity = (Map)m.get("verbosity");
-		if (verbosity != null) {
-			logLevel = ((Double)verbosity.get("level")).intValue();
-		}
-		if (m.get("connections")!=null) {
-			Double d = (Double)m.get("connections");
-			connections = d.intValue();
-		}
+		App app = myConfig.app;
+		Verbosity verbosity = app.verbosity;
+		Redis redisInfo = app.redis;
+		logLevel = verbosity.level;
+		connections = app.connections;
+		redis = redisInfo.host;
+		redisPort = redisInfo.port;
+		logName = redisInfo.logger;
+		
+		
 		
 		cfg.useSingleServer()
-    	.setAddress(redis + ":" + redisHost)
+    	.setAddress(redis + ":" + redisPort)
     	.setConnectionPoolSize(connections);
 		setup();
+		
+		loggerQueue = new LogPublisher(redisson,logName);
+		
 		System.out.println("Subscribers:");
 		printSubscribers();
 		System.out.println("-------------\nPublishers:");
 		printPublishers();
+	}
+	
+	public static void log(int level, String field, String message) {
+		if (logLevel >  0 && !(logLevel >= logLevel))
+			return;
+	    
+		if (loggerQueue == null)
+			return;
+		
+		LogMessage msg = new LogMessage(level,instanceName,field,message);
+		loggerQueue.add(msg);
+		if (logLevel <= 0) {
+			System.out.format("[%s] - %d - %s - %s - %s\n",sdf.format(new Date()),msg.sev,msg.source,msg.field,msg.message);
+		}
 	}
 	
 	public void reset() {

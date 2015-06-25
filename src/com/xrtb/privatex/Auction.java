@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.xrtb.privatex.bidrequest.PvtBidRequest;
 import com.xrtb.privatex.bidresponse.Body;
+import com.xrtb.privatex.cfg.Database;
 
 /**
  * A class that implements best price auction.
@@ -79,10 +80,9 @@ public class Auction implements Runnable {
 		} catch (Exception error) {
 			System.out.println(error.toString());
 			System.out.println(campaign.getAttributesAsString());
+			Database.log(3,"Auction/evalJS","Error: " + error.toString());
 			throw error;
 		}
-		
-		System.out.println(engine.get("request"));
 
 		me = new Thread(this);
 		me.start();
@@ -136,20 +136,19 @@ public class Auction implements Runnable {
 		Request request = new Request(uuid, pvt);
 		bidrequests.publish(request);
 
-		System.out.println("==================> WAITING FOR RESPONSE!");
+		Database.log(5,"Auction/requestBids:waiting","Waiting for response from subscribers");
 		try {
 			Thread.yield();
-			Thread.sleep(1000);
+			Thread.sleep(500);
 		} catch (Exception error) {
 
 		}
-		System.out.println("===================>WAIT FOR RESPONSE TIMED OUT!");
 		r = Database.redisson.getList(uuid);
 		for (int i = 0; i < r.size(); i++) {
 			Response b = (Response) r.get(i);
 			bids.add(b);
 		}
-		System.out.println("================> NUMBER OF BIDS IN THE AUCTION NOW: " + bids.size());
+		Database.log(5,"Auction/requestBids:complete","Number of bids: " + bids.size());
 		r.deleteAsync();
 	}
 
@@ -174,7 +173,7 @@ public class Auction implements Runnable {
 		try {
 			latch.await(1000,TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
-			System.out.println("===============> Winner did not respond!");
+			Database.log(5,"Auction/notifyWinner","Winner did not respond!");
 			return;                          // sorry, winner timed out, no ad will be served.
 		}
 

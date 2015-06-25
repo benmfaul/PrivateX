@@ -5,8 +5,8 @@
         "connections": 100,
         "ttl": 300,
         "verbosity": {
-            "level": 2,
-            "nobid-reason": true
+            "level": 0,
+            "nobidReason": true
         },
         "redis": {
             "host": "localhost",

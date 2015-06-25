@@ -17,6 +17,7 @@ import com.xrtb.pojo.BidRequest;
 import com.xrtb.privatex.bidrequest.PvtBidRequest;
 import com.xrtb.privatex.bidresponse.Bid;
 import com.xrtb.privatex.bidresponse.Body;
+import com.xrtb.privatex.cfg.Database;
 
 /**
  * A class that handles RTB bid requests to subscribing RTB DSPs.
@@ -129,16 +130,17 @@ public class Subscriber implements Runnable {
 		
 		String returns = "hello world";
 		String s = r.br.toString();
-		System.out.println("--------------->"+s);
+		Database.log(5,"Subscriber/foRequest:sending",s);
 		
 		try {
 			returns = connection.sendPost(url,r.br.toJson()); 
 		} catch (Exception e) {
 			e.printStackTrace();
+			Database.log(2,"Subscriber/doRequest:response","Error receiving response, error is: " +e.toString());
 		}
 
 		if (connection.getResponseCode() == 200) {     /** LET'S BID */
-			System.out.println("GOOD BID RECEIVED FROM RTB!");
+			Database.log(5,"Subscriber/doRequest:response","Good bid received from Subscriber:" + name);
 			Response response = new Response();
 			response.html = returns;
 			response.from = accountNumber;
@@ -148,7 +150,8 @@ public class Subscriber implements Runnable {
 			// store the adm record
 			
 		} else {
-			System.err.println(returns);
+			returns = connection.getHeader("X-REASON");
+			Database.log(3,"Subscriber/doRequest:response","Error received from Subscriber:" + name + ", error:"+returns);
 		}
 	}
 	
@@ -169,7 +172,7 @@ public class Subscriber implements Runnable {
 			//String s[] = nurl.split("http");
 			//nurl = "http" + s[1];
 			adm = connection.sendGet(nurl);
-			System.out.println("ADM: " + adm);
+			Database.log(5,"Subscriber/doAdm:adm",adm);
 		} catch(Exception error) {
 			
 		}

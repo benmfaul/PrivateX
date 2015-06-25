@@ -20,6 +20,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import com.xrtb.bidder.RTBServer;
+import com.xrtb.privatex.cfg.Database;
 
 /**
  * Creates the HTTP handler for the advertising exchange. Receives ajax calls
@@ -67,6 +68,7 @@ public class Exchange implements Runnable {
 	public void run() {
 		Server server = new Server(db.port);
 		server.setHandler(new ExchangeHandler());
+		Database.log(2,"Exchange/run","Starting on port " + port);
 		try {
 			server.start();
 			server.join();
@@ -105,6 +107,8 @@ class ExchangeHandler extends AbstractHandler {
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
 
+		Database.log(5,"ExchageHandler/hande",target);
+		
 		try {
 			if (target.contains("auction")) {
 				html = new AuctionRequest(body, ipAddress).process();
