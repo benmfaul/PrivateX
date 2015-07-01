@@ -120,16 +120,18 @@ public class Database {
 	}
 	
 	public static void log(int level, String field, String message) {
-		if (logLevel >  0 && !(logLevel >= logLevel))
+		if (logLevel >  0 && (level >= logLevel))
 			return;
 	    
 		if (loggerQueue == null)
 			return;
 		
 		LogMessage msg = new LogMessage(level,instanceName,field,message);
-		loggerQueue.add(msg);
-		if (logLevel <= 0) {
-			System.out.format("[%s] - %d - %s - %s - %s\n",sdf.format(new Date()),msg.sev,msg.source,msg.field,msg.message);
+		if (logLevel < 0) {
+			if (Math.abs(logLevel) >= logLevel)
+				System.out.format("[%s] - %d - %s - %s - %s\n",sdf.format(new Date()),msg.sev,msg.source,msg.field,msg.message);
+		} else {
+			loggerQueue.add(msg);
 		}
 	}
 	

@@ -5,7 +5,7 @@
         "connections": 100,
         "ttl": 300,
         "verbosity": {
-            "level": 0,
+            "level": -5,
             "nobidReason": true
         },
         "redis": {
@@ -20,4 +20,9 @@
             }
         ]
     }
+    "web": [
+    	{"context":"/auction","base:","class":"com.xrtb.privatex.Exchange"},
+    	{"context":"/hello","base":".","class":"HelloHandler"},
+    	{"context":"/bye","base":".","class":"ByeHandler"}
+    ]
 }
