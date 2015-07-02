@@ -120,7 +120,7 @@ public class Database {
 	}
 	
 	public static void log(int level, String field, String message) {
-		if (logLevel >  0 && (level >= logLevel))
+		if (logLevel >  0 && (level > logLevel))
 			return;
 	    
 		if (loggerQueue == null)

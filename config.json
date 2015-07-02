@@ -19,10 +19,17 @@
                 "campaign": "TheSampleDemoCampaign"
             }
         ]
-    }
+    },
     "web": [
-    	{"context":"/auction","base:","class":"com.xrtb.privatex.Exchange"},
-    	{"context":"/hello","base":".","class":"HelloHandler"},
-    	{"context":"/bye","base":".","class":"ByeHandler"}
+        {
+            "context": ["/h*"],
+            "base": ".",
+            "className": "HelloHandler"
+        },
+        {
+            "context": ["/b*"],
+            "base": ".",
+            "className": "ByeHandler"
+        }
     ]
 }
