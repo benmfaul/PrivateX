@@ -160,7 +160,7 @@ public class Auction implements Runnable {
 	public void notifyWinner(Response winner)  {
 		RCountDownLatch latch = Database.redisson.getCountDownLatch("latch:"+uuid);
 	//	System.out.println("HTML: " + winner.toString());
-		 Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		 Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 		Map x = gson.fromJson(winner.html, Map.class);
 		System.out.println("MAP: " + gson.toJson(x));
 		
