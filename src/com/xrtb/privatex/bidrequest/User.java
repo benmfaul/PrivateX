@@ -5,7 +5,7 @@ public class User {
 	public int yob; 
 	public String gender;
 	public String keywords;
-	public UserGeo geo; 
+	public UserGeo geo = new UserGeo(); 
 	public Ext ext;   // add user extensions here, like marital status, kids, income, dma, etc.
     
     public User() {

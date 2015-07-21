@@ -41,7 +41,7 @@ public class Database {
 	public static ConcurrentMap<String, Response> candidates;
 	public static Redisson redisson;
 	transient Config cfg = new Config();
-	transient Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	transient Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 	static LogPublisher loggerQueue;
 
 	public int port;
