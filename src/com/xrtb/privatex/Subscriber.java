@@ -1,6 +1,7 @@
 package com.xrtb.privatex;
 
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +14,7 @@ import org.redisson.core.RTopic;
 
 import com.google.gson.Gson;
 import com.xrtb.common.HttpPostGet;
-import com.xrtb.pojo.BidRequest;
-import com.xrtb.privatex.bidrequest.PvtBidRequest;
+
 import com.xrtb.privatex.bidresponse.Bid;
 import com.xrtb.privatex.bidresponse.Body;
 import com.xrtb.privatex.cfg.Database;
@@ -25,23 +25,39 @@ import com.xrtb.privatex.cfg.Database;
  *
  */
 public class Subscriber implements Runnable {
+	/** Redisson topic for bid requests */
 	transient RTopic bidRequests;
+	/** Redisson topic for win responses */
 	transient RTopic winResponses;
+	/** My thread */
 	transient Thread me;
+	/** The connection object to the RTB bidder */
 	transient HttpPostGet connection;
+	/** The JSON mapping object  for this subscriber */
 	transient ObjectMapper mapper = new ObjectMapper();
 	
+	/** The URL of this subscriber's RTB */
 	String url;
 
+	/** String the account number of this RTB subscriber */
 	String accountNumber;
+	/** The name of this subscriber */
     String name;
+    /** The address of this RTB subscriber */
     String address;
+    /** The telephone number of this RTB subscriber */
     String telephoneNumber;
+    /** The max connextions the RTB subscriber wants */
     int maxConnections;
+    /** The max rate in bid requests per second */
     int maxRate = 0;
+    /** The number of requests successfully sent */
     int sentOk = 0;
+    /** The number of errored requests */
     int errored = 0;
+    /** The number of times the RTB bidder bid */
     int bid = 0;
+    /** The number of thimes the RTB bidder did not bid */
     int noBid = 0;
     
     /** handles win notifications, returns ADM */
@@ -56,6 +72,11 @@ public class Subscriber implements Runnable {
 		
 	}
 	
+	/**
+	 * Return a subscriber from a Map representing the subscriber.
+	 * @param m Map. A map object that can be converted to a subscriber.
+	 * @return Subscriber. A subscriber object constructed from the map.
+	 */
 	public static Subscriber instance(Map m) {
 		Gson gson = new Gson();
 		String s = gson.toJson(m);
@@ -74,6 +95,9 @@ public class Subscriber implements Runnable {
 		me.start();
 	}
 
+	/**
+	 * This is the code that actually sends bid requests to the RTB subscriber 
+	 */
 	public void run() {
 		bidRequests.addListener(new MessageListener<Request>() {
 
@@ -130,17 +154,20 @@ public class Subscriber implements Runnable {
 		
 		String returns = "hello world";
 		String s = r.br.toString();
-		Database.log(5,"Subscriber/foRequest:sending",s);
+		Database.log(5,"Subscriber:"+name+":doRequest:sending",s);
 		
 		try {
 			returns = connection.sendPost(url,r.br.toJson()); 
+			sentOk++;
 		} catch (Exception e) {
-			e.printStackTrace();
-			Database.log(2,"Subscriber/doRequest:response","Error receiving response, error is: " +e.toString());
+			Database.log(2,"Subscriber:"+name+":doRequest:response","Error receiving response, error is: " +e.toString());
+			returns = null;
+			this.errored++;
+			return;
 		}
 
 		if (connection.getResponseCode() == 200) {     /** LET'S BID */
-			Database.log(5,"Subscriber/doRequest:response","Good bid received from Subscriber:" + name);
+			Database.log(5,"Subscriber:"+name+":doRequest:response","Good bid received from Subscriber:" + name);
 			Response response = new Response();
 			response.html = returns;
 			response.from = accountNumber;
@@ -151,7 +178,7 @@ public class Subscriber implements Runnable {
 			
 		} else {
 			returns = connection.getHeader("X-REASON");
-			Database.log(3,"Subscriber/doRequest:response","Error received from Subscriber:" + name + ", error:"+returns);
+			Database.log(3,"Subscriber:"+name+"doRequest:response","Error received from Subscriber:" + name + ", error:"+returns);
 		}
 	}
 	

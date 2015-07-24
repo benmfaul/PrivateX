@@ -36,21 +36,36 @@ import com.xrtb.privatex.bidrequest.Impression;
  *
  */
 public class Database {
+	/** The map of publishers */
 	public static ConcurrentMap<String, Publisher> publishers;
-	static RList<Subscriber> subscribers;
+	/** The list of subscriber */
+	public static RList<Subscriber> subscribers;
+	/** Candidate bid requests */
 	public static ConcurrentMap<String, Response> candidates;
+	/** The global redisson object */
 	public static Redisson redisson;
+	/** The configuration object */
 	transient Config cfg = new Config();
-	transient Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+	/** A gson object for pretty printing */
+	public transient static Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+	/** The log publishing queue */
 	static LogPublisher loggerQueue;
 
+	/** This http port */
 	public int port;
+	/** This systems instance name */
 	public static String instanceName;
+	/** The current log level */
 	public static int logLevel;
+	/** The number of connections to support */
 	int connections;
+	/** The redis host string */
 	String redis;
+	/** The redis port */
 	int redisPort;
+	/** The logger topic name */
 	String logName;
+	/** A format string for logging */
 	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	/**
 	 * Used to create an initial database in Redisson.

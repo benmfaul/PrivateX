@@ -1,17 +1,5 @@
-<html>
 
-    <script src=
-    "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src=
-    "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-
-Blah blah blah blah...
-<div id="hello"></div>
-Blah blah blah blah blah!
-
-
-<script>
-function RequestAuction(div,exchangeid,campaign,url) {
+function PrivateRTB(div,exchangeid,campaign,url) {
 	this.div = div;
     this.exchangeid = exchangeid;
     this.campaignid = campaign;
@@ -22,7 +10,7 @@ function RequestAuction(div,exchangeid,campaign,url) {
     this.platform = navigator.platform;
 }
 
-RequestAuction.prototype.perform = function() {
+PrivateRTB.prototype.perform = function() {
 	var div = this.div;
 	var cmd = {};
 	cmd.ua = this.ua;
@@ -39,17 +27,18 @@ RequestAuction.prototype.perform = function() {
 		cmd.maxDownLink = -1.0;
 	}
 	var url = this.url;
+	var self = this;
     if (typeof navigator.geolocation != 'undefined') {
         navigator.geolocation.getCurrentPosition(function(position) {
         	cmd.lat = position.coords.latitude;
         	cmd.lon = position.coords.longitude;
-        	doAjax(url,cmd, div);
+        	self.doAjax(url,cmd, div);
         });
     } else	
-		doAjax(url,cmd,div);
+		self.doAjax(url,cmd,div);
 }
 
-function doAjax(url,cmd,div) {
+PrivateRTB.prototype.doAjax = function(url,cmd,div) {
     $.ajax({
          type: 'POST',
          url: url,
@@ -69,11 +58,5 @@ function doAjax(url,cmd,div) {
       }});
 }
 
-function check() {
-	ad.perform();
-}
 
-ad = new RequestAuction(document.getElementById("hello"),"111-222-333-444-555","superdupertestcampaign","http://localhost:9090/auction").perform();
-	
-</script>
-</html>
+

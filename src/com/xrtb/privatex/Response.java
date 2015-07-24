@@ -6,15 +6,26 @@ package com.xrtb.privatex;
  *
  */
 public class Response {
+	/** Id of who this response is from */
 	public String from;
+	/** The id of who this is going to */
 	public String id;
+	/** html assocated with this response */
 	public String html;
+	/** price associated with this response */
 	public double price;
 	
+	/**
+	 * Default empty constructor
+	 */
 	public Response() {
 		
 	}
 	
+	/**
+	 * A pretty print version of this response
+	 * @return String. A string representation of this responae.
+	 */
 	public String toString() {
 		String s = "Response, \n" +
 					"\tFrom: " + from + "\n"+

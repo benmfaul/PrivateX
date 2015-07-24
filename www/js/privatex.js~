@@ -1,0 +1,59 @@
+function RequestAuction(div,exchangeid,campaign,url) {
+	this.div = div;
+    this.exchangeid = exchangeid;
+    this.campaignid = campaign;
+    this.url = url;
+    this.ua = navigator.userAgent;
+    this.lat = 0;
+    this.lon = 0;
+    this.platform = navigator.platform;
+}
+
+RequestAuction.prototype.perform = function() {
+	var div = this.div;
+	var cmd = {};
+	cmd.ua = this.ua;
+	cmd.location = this.location;
+	cmd.accountNumber  = this.exchangeid;
+	cmd.campaign = this.campaignid;
+	cmd.platform = this.platform;;
+	if (typeof navigator.connection != 'undefined') {
+		cmd.connectionType = navigator.connection.type;
+	 	cmd.maxDownLink = navigator.connection.downlinkMax;;
+	}
+	else {
+		cmd.connectionType = 'unk';
+		cmd.maxDownLink = -1.0;
+	}
+	var url = this.url;
+    if (typeof navigator.geolocation != 'undefined') {
+        navigator.geolocation.getCurrentPosition(function(position) {
+        	cmd.lat = position.coords.latitude;
+        	cmd.lon = position.coords.longitude;
+        	doAjax(url,cmd, div);
+        });
+    } else	
+		doAjax(url,cmd,div);
+}
+
+function doAjax(url,cmd,div) {
+    $.ajax({
+         type: 'POST',
+         url: url,
+         data: JSON.stringify(cmd),
+         success: function(data, textStatus, request){
+           if (request.status == 204) {
+           	alert("No bid returned, so nothing changes");
+           	return;
+           } else {
+           	text = request.responseText;
+           	console.log("TEXT: " + text);
+          	div.innerHTML = text;
+          }
+         },
+         error: function (request, textStatus, errorThrown) {
+           alert("Error: " + request.responseText);
+      }});
+}
+
+alert("Library loaded");

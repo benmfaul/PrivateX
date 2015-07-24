@@ -7,19 +7,16 @@
             "id": "publisher-id",
             "domain":"junk1.com",
             "campaigns": {
-                "superdupertestcampaign": {
+                "banner-campaign": {
                     "price": 10,
-                    "identifier": "superdupertestcampaign",
                     "served": 0,
                     "requested": 0,
                     "page": "http://www.rtb4free/sample.html",
                     "attributes": [
                         "var Impression = Java.type('com.xrtb.privatex.bidrequest.Impression');",
-                        "var Banner = Java.type('com.xrtb.privatex.bidrequest.Banner');",
-                        "im = new Impression();",
+                        "im = new Impression().doBanner();",
                         "im.id = request.id;",
                         "im.instl = 0;",
-                        "im.banner = new Banner();",
                         "im.banner.h = 50;",
                         "im.banner.w = 320;",
                         "im.banner.pos = 0;",
@@ -33,7 +30,37 @@
                         "request.site.ext.rtb4free.connectionType=cmd.connectionType;",
                         "request.site.ext.rtb4free.maxDownLink=cmd.maxDownLink;"
                     ]
+                },
+                "video-campaign": {
+                    "price": 12,
+                    "served": 0,
+                    "requested": 0,
+                    "page": "http://www.rtb4free/video-sample.html",
+                    "attributes": [
+                        "var Impression = Java.type('com.xrtb.privatex.bidrequest.Impression');",,
+                        "im = new Impression().doVideo();",
+                        "im.id = request.id;",
+                        "im.instl = 0;",
+                        "im.video.h = 50;",
+                        "im.video.w = 320;",
+                        "im.video.linerarity = 0;",
+                        "im.video.minduration = 5;",
+                        "im.video.maxduration = 30;",
+                        "im.video.protocols.add(2);",
+                        "im.video.mines.add('video/mp4');",
+                        "im.banner.pos = 0;",
+                        "request.imp.add(im);",
+                        "request.device.ua =  cmd.ua;",
+                        "request.device.geo.lat = cmd.lat;",
+                        "request.device.geo.lon = cmd.lon;",
+                        "request.site.cat.add('IAB1');",
+                        "request.site.cat.add('IAB2');",
+                        "request.site.ext.rtb4free.platform=cmd.platform;",
+                        "request.site.ext.rtb4free.connectionType=cmd.connectionType;",
+                        "request.site.ext.rtb4free.maxDownLink=cmd.maxDownLink;"
+                    ]
                 }
+                
             }
         }
     },

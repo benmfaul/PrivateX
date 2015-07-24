@@ -5,18 +5,25 @@ import com.xrtb.privatex.bidrequest.PvtBidRequest;
 
 /**
  * A class used to transmit bid requests and win notifications to a publisher object. This class
- * is used by the Auction class.
+ * is used by the Auction class and is transmitted over REDIS.
  * @author Ben M. Faul
  *
  */
 
 public class Request {
+	/** Code for a bidrequest */
 	public static final int BIDREQUEST = 0;
+	/** code for a win notify */
 	public static final int WINNOTIFY = 1;
+	/** The request type */
 	public int type;
+	/** A bid request object that travels with this request */
 	public PvtBidRequest br;
+	/** A unique user id for this request */
 	String uuid;
+	/** The publisher id this request relates to */
 	String id;
+	/** The cost associated with this request */
 	double cost;
 	
 	/**

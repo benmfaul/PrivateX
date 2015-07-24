@@ -2,7 +2,7 @@ package com.xrtb.privatex;
 
 /**
  * A simple class for holding a lat/long object.
- * @author ben
+ * @author Ben M. Faul
  *
  */
 public class LatLong {
