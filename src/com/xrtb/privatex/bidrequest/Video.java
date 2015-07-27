@@ -1,28 +1,82 @@
 package com.xrtb.privatex.bidrequest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /** 
- * A clasa of minimal video attributes. These are all reauired attributes.
+ * AN RTB Video object of minimal video attributes. The getter/setters provide the reuired attributes. Other
+ * attributes can be added using the put method.
  * @author Ben M. Faul
  *
  */
-public class Video {
-	/** The height of the ad */
-    int h;
-    /** The width of the ad */
-    int w;
-    /** Whether it is linear or not */
-    int linerarity;
-    /** Min duration in seconds */
-	int minduration;
-	/** Max duration in seconds */
-	int maxduration;
-	/** The list of protocols supported */
-	List<Integer> protocols;
-	/** The mine types supported */
-	List<String> mimes = new ArrayList();
-	/** The position of the ad on the page */
-	int pos;
+public class Video extends HashMap {
+	
+    public int getHeight() {
+		return (Integer)get("h");
+	}
+
+	public void setHeight(int h) {
+		put("h",h);
+	}
+
+	public int getWidth() {
+		return (Integer)get("w");
+	}
+
+	public void setWidth(int w) {
+		put("w",w);
+	}
+
+	public int getLinearaity() {
+		return (Integer)get("lineararity");
+	}
+
+	public void setLinearaity(int lineararity) {
+		put("linearaity",lineararity);
+	}
+
+	public int getMinduration() {
+		return (Integer)get("minduration");
+	}
+
+	public void setMinduration(int minduration) {
+		put("minduration",minduration);
+	}
+
+	public int getMaxduration() {
+		return (Integer)get("maxduration");
+	}
+
+	public void setMaxduration(int maxduration) {
+		put("maxduration", maxduration);
+	}
+
+	public List<Integer> getProtocols() {
+		return (List<Integer>)get("protocols");
+	}
+
+	public void setProtocols(List<Integer> protocols) {
+		put("protocols",protocols);
+	}
+
+	public List<String> getMimes() {
+		return (List<String>)get("mimes");
+	}
+
+	public void setMimes(List<String> mimes) {
+		put("mimes",mimes);
+	}
+
+	public int getPos() {
+		return (Integer)get("pos");
+	}
+
+	public void setPos(int pos) {
+		put("pos",pos);
+	}
+	
+	public Video() {
+		
+	}
 }

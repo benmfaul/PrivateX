@@ -1,0 +1,44 @@
+<html>
+
+    <script src=
+    "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="js/privatex.js"></script>
+    
+    <link href="http://vjs.zencdn.net/4.7.1/video-js.css" rel="stylesheet">
+    <link href="vplayer/lib/videojs-contrib-ads/videojs.ads.css" rel="stylesheet" type="text/css">
+    <link href="vplayer/videojs.vast.css" rel="stylesheet" type="text/css">
+    
+<style type="text/css">
+    .description {
+      background-color:#eee;
+      border: 1px solid #777;
+      padding: 10px;
+      font-size: .8em;
+      line-height: 1.5em;
+      font-family: Verdana, sans-serif;
+    }
+    .example-video-container {
+      display: inline-block;
+    }
+  </style>
+    
+     <!--[if lt IE 9]><script src="lib/es5.js"></script><![endif]-->
+     <script src="http://vjs.zencdn.net/4.7.1/video.js"></script>
+     <script src="vplayer/lib/videojs-contrib-ads/videojs.ads.js"></script>
+
+     <script src="vplayer/lib/vast-client.js"></script>
+     <script src="vplayer/videojs.vast.js"></script>
+
+Blah blah blah blah The banner ad will appear below...
+<div id="the-ad-goes-here"></div>
+If there was a successful auction, the banner is right above us here...<br/>
+Blah blah blah blah blah!
+
+
+<script>
+
+
+ad = new PrivateRTB(document.getElementById("the-ad-goes-here"),"111-222-333-444-555","video-campaign","http://localhost:9090/auction").perform();
+	
+</script>
+</html>

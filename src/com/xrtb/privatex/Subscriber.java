@@ -154,7 +154,7 @@ public class Subscriber implements Runnable {
 		
 		String returns = "hello world";
 		String s = r.br.toString();
-		Database.log(5,"Subscriber:"+name+":doRequest:sending",s);
+		Database.log(5,"Subscriber:"+name+":doRequest:sending",url+" ### " + s);
 		
 		try {
 			returns = connection.sendPost(url,r.br.toJson()); 

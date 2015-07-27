@@ -81,6 +81,11 @@ public class Auction implements Runnable {
 			System.out.println(error.toString());
 			System.out.println(campaign.getAttributesAsString());
 			Database.log(3,"Auction/evalJS","Error: " + error.toString());
+			
+			String lines[] = campaign.getAttributesAsString().split("\n");
+			for (int i = 0; i < lines.length; i++) {
+				System.err.println("["+i+"]\t" + lines[i]);
+			}
 			throw error;
 		}
 

@@ -3,7 +3,14 @@ package com.xrtb.privatex.cfg;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * An IAB definitions class
+ * @author Ben M. Faul
+ *
+ */
+
 public class IAB {
+	/** The map of IAB names to descriptions */
 	public static Map<String, String> map = new HashMap();
 	static {
 		map.put("IAB1", "Arts & Entertainment");
@@ -400,6 +407,9 @@ public class IAB {
 		map.put("IAB26-4", "CopyrightInfringement");
 	};
 	
+	/** 
+	 * IAB Constants to String name
+	 */
 	public static final String IAB1 = "IAB1";
 	public static final String IAB1_1 = "IAB1-1";
 	public static final String IAB1_2 = "IAB1-2";

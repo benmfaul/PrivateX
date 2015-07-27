@@ -13,17 +13,17 @@ import com.google.gson.GsonBuilder;
  */
 public class Publisher {
 	/** The name of the publisher */
-	 String name;
+	public  String name;
 	 /** The address of the publisher */
-	 String address; 
+	public String address; 
 	 /** The telephone number of the publisher */
-	 String telephoneNumber;
+	public String telephoneNumber;
 	 /** The id of the publisher */
-	 String id;
+	public String id;
 	 /** The publisher domain name */
-	 String domain = "unknown.com";
+	public  String domain = "unknown.com";
 	 /** A map of campaigns used by this publisher */
-	 Map<String,Campaign> campaigns = new HashMap();
+	public Map<String,Campaign> campaigns = new HashMap();
 	 
 	 /**
 	  * Default constructor

@@ -20,7 +20,7 @@ public class Campaign {
 	/** The http address of this page */
 	String page;
 	/** The javascript attributes used by this campaign to create an RTB bid */
-	List<String> attributes;
+	public List<String> attributes;
 	/** All the attributes concatenated together */
 	transient String attributesAsString;
 

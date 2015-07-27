@@ -84,7 +84,7 @@ public class AuctionRequest {
 			return null;
 		while(auction.isDone()==false);
 		html = auction.process();
-		Database.log(5,"AuctionRequest/process","Returning HTML" + html);
+		Database.log(5,"AuctionRequest/process","Returning HTML " + html);
 		return html;
 	}
 }
