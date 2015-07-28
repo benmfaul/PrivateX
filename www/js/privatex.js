@@ -10,7 +10,7 @@ function PrivateRTB(div,exchangeid,campaign,url) {
     this.platform = navigator.platform;
 }
 
-PrivateRTB.prototype.perform = function() {
+PrivateRTB.prototype.perform = function(video) {
 	var div = this.div;
 	var cmd = {};
 	cmd.ua = this.ua;
@@ -32,13 +32,13 @@ PrivateRTB.prototype.perform = function() {
         navigator.geolocation.getCurrentPosition(function(position) {
         	cmd.lat = position.coords.latitude;
         	cmd.lon = position.coords.longitude;
-        	self.doAjax(url,cmd, div);
+        	self.doAjax(url,cmd, div, video);
         });
     } else	
-		self.doAjax(url,cmd,div);
+		self.doAjax(url,cmd,div, video);
 }
 
-PrivateRTB.prototype.doAjax = function(url,cmd,div) {
+PrivateRTB.prototype.doAjax = function(url,cmd,div, video) {
     $.ajax({
          type: 'POST',
          url: url,
@@ -50,7 +50,10 @@ PrivateRTB.prototype.doAjax = function(url,cmd,div) {
            } else {
            	text = request.responseText;
            	console.log("TEXT: " + text);
-          	div.innerHTML = text;
+           	if (typeof video === 'undefined')
+          		div.innerHTML = text;
+          	else
+          		video(text);
           }
          },
          error: function (request, textStatus, errorThrown) {

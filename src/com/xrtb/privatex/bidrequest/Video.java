@@ -28,12 +28,12 @@ public class Video extends HashMap {
 		put("w",w);
 	}
 
-	public int getLinearaity() {
-		return (Integer)get("lineararity");
+	public int getLinearity() {
+		return (Integer)get("linearity");
 	}
 
-	public void setLinearaity(int lineararity) {
-		put("linearaity",lineararity);
+	public void setLinearity(int linearity) {
+		put("linearity",linearity);
 	}
 
 	public int getMinduration() {

@@ -29,16 +29,37 @@
      <script src="vplayer/lib/vast-client.js"></script>
      <script src="vplayer/videojs.vast.js"></script>
 
-Blah blah blah blah The banner ad will appear below...
-<div id="the-ad-goes-here"></div>
-If there was a successful auction, the banner is right above us here...<br/>
+Blah blah blah blah The video ad will appear below...
+
+<video id='vid2' class='video-js vjs-default-skin' autoplay controls preload='auto'
+        poster='http://video-js.zencoder.com/oceans-clip.png'
+        data-setup='{}'
+        width='300'
+        height='300'>
+      <source src='http://video-js.zencoder.com/oceans-clip.mp4' type='video/mp4'>
+      <source src='http://video-js.zencoder.com/oceans-clip.webm' type='video/webm'>
+      <source src='http://video-js.zencoder.com/oceans-clip.ogv' type='video/ogg'>
+      <p>Video Playback Not Supported</p>
+</video> 
+
+<br/>
 Blah blah blah blah blah!
 
 
 <script>
 
+function onVideo(data) {
+	vid2 = videojs('vid2');
+	vid2.muted(false);
+	vid2.ads();
+	vid2.vast({
+    	url:  'http://localhost:8080/vast/onion270.xml'
+   	});
+}
 
-ad = new PrivateRTB(document.getElementById("the-ad-goes-here"),"111-222-333-444-555","video-campaign","http://localhost:9090/auction").perform();
+ad = new PrivateRTB(document.getElementById("the-ad-goes-here"),
+	"111-222-333-444-555",
+	"video-campaign","http://localhost:9090/auction").perform(onVideo);
 	
 </script>
 </html>
