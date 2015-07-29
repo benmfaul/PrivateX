@@ -56,8 +56,10 @@ PrivateRTB.prototype.doAjax = function(url,cmd,div, video) {
            	console.log("TEXT: " + text);
            	if (typeof video === 'undefined')
           		div.innerHTML = text;
-          	else
-          		video(text);
+          	else {
+          		data = unescape(data);
+          		video(data);
+          	}
           }
          },
          error: function (request, textStatus, errorThrown) {

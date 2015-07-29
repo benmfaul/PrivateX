@@ -1,0 +1,103 @@
+<project name="privatex" basedir="." default="jar">
+	<property name="build.dir"	 value="build"/>
+    <property name="src.dir"     value="src"/>
+
+    <property name="classes.dir" value="build/classes"/>
+    <property name="jar.dir"     value="libs"/>
+    <property name="lib.dir"     value="../XRTB/libs"/>
+    <property name="report.dir"  value="${basedir}/reports"/>
+
+    <property name="main-class"  value="com.xrtb.privatex.Exchange"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        <path location="${lib.dir}/gson-2.2.4.jar"/>
+    </path>
+
+    <path id="application" location="privatex.jar"/>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+	
+	<target name="javadoc">
+	<javadoc  destdir="${basedir}/javadoc">
+	    <packageset dir="src" defaultexcludes="yes">
+	      	<include name="**"/>
+	    </packageset>
+		<classpath>
+		   <path refid="classpath"/>
+		   <path location="${classes.dir}"/>
+	    </classpath>
+	</javadoc>
+	</target>
+  
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"  debug="on"/>
+        <copy todir="${classes.dir}">
+            <fileset dir="${src.dir}" excludes="**/*.java"/>
+        </copy>
+    </target>
+
+    <target name="jar" depends="compile">
+        <jar destfile="${lib.dir}/${ant.project.name}.jar" basedir="${classes.dir}" excludes="**/*Test.class">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class}"/>
+            </manifest>
+        </jar>
+    </target>
+	
+    <target name="privatex" depends="jar">
+    	<java classname="${main-class}" fork="true">
+    	    <arg line="config.json"/>
+            <classpath>
+                <path refid="classpath"/>
+                <path refid="application"/>
+            </classpath>
+    	   </java>
+    </target>
+	
+    <target name="load-database" depends="jar">
+    	<java classname="com.xrtb.privatex.cfg.Database" fork="true">
+            <classpath>
+                <path refid="classpath"/>
+                <path refid="application"/>
+            </classpath>
+    	   </java>
+    </target>
+	
+
+    <target name="junit" depends="compile">
+        <mkdir dir="${report.dir}"/>
+        <junit printsummary="yes" haltonfailure="no" showoutput="yes">
+            <classpath>
+                <path refid="classpath"/>
+                <path location="${classes.dir}"/>
+            </classpath>
+
+            <formatter type="xml"/>
+
+            <batchtest fork="yes" todir="${report.dir}">
+                <fileset dir="${src.dir}" includes="com/xrtb/privatex/Test*.java"/>
+            </batchtest>
+        </junit>
+    </target>
+
+
+<target name="junitreport" depends="junit">
+	<junitreport todir="${report.dir}">
+			<fileset dir="${report.dir}">
+				<include name="TEST*.xml" />
+			</fileset>
+			<report format="frames" todir="html" />
+		</junitreport>
+</target>
+		
+
+    <target name="clean-build" depends="clean,jar"/>
+
+    <target name="main" depends="clean"/>
+
+</project>
