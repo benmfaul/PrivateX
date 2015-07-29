@@ -9,11 +9,19 @@ Blah blah blah blah The banner ad will appear below...
 If there was a successful auction, the banner is right above us here...<br/>
 Blah blah blah blah blah!
 
-
 <script>
 
+function doNobid() {
+	alerr("The RTB bidder returned no bid!");
+}
 
-ad = new PrivateRTB(document.getElementById("the-ad-goes-here"),"111-222-333-444-555","banner-campaign","http://localhost:9090/auction").perform();
+params = {};
+params.div = document.getElementById("the-ad-goes-here");
+params.exchangeid = "111-222-333-444-555";
+params.campaign = "banner-campaign";
+params.url = "http://localhost:9090/auction";
+params.nobid = doNobid;
+ad = new PrivateRTB(params).perform();
 	
 </script>
 </html>

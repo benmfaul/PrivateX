@@ -29,7 +29,12 @@
      <script src="vplayer/lib/vast-client.js"></script>
      <script src="vplayer/videojs.vast.js"></script>
 
-Blah blah blah blah The video ad will appear below...
+<p>In the space below, a video about animals of the oceans feeding.
+But first, the page will ask for an advertisement to appear in the
+video player below.</p>
+<p>If the RTB bidder returns an ad for 'Charmin' bath tissue then transaction
+succeeded. If the animals in the sea video plays first, then that means there
+was a no bid from the RTB bidder.</p>
 
 <video id='vid2' class='video-js vjs-default-skin' autoplay controls preload='auto'
         poster='http://video-js.zencoder.com/oceans-clip.png'
@@ -43,7 +48,7 @@ Blah blah blah blah The video ad will appear below...
 </video> 
 
 <br/>
-Blah blah blah blah blah!
+<p>Blah blah blah, the web page continues</p>
 
 
 <script>
@@ -57,9 +62,13 @@ function onVideo(data) {
    	});
 }
 
-ad = new PrivateRTB(document.getElementById("the-ad-goes-here"),
-	"111-222-333-444-555",
-	"video-campaign","http://localhost:9090/auction").perform(onVideo);
+params = {};
+params.exchangeid = "111-222-333-444-555";
+params.campaign = "video-campaign";
+params.url = "http://localhost:9090/auction";
+params.video = onVideo;
+
+ad = new PrivateRTB(params).perform();
 	
 </script>
 </html>

@@ -1,16 +1,18 @@
 
-function PrivateRTB(div,exchangeid,campaign,url) {
-	this.div = div;
-    this.exchangeid = exchangeid;
-    this.campaignid = campaign;
-    this.url = url;
+function PrivateRTB(params) {
+	this.div = params.div;
+    this.exchangeid = params.exchangeid;
+    this.campaignid = params.campaign;
+    this.url = params.url;
+    this.nobid = params.nobid;
+    this.video = params.video;
     this.ua = navigator.userAgent;
     this.lat = 0;
     this.lon = 0;
     this.platform = navigator.platform;
 }
 
-PrivateRTB.prototype.perform = function(video) {
+PrivateRTB.prototype.perform = function() {
 	var div = this.div;
 	var cmd = {};
 	cmd.ua = this.ua;
@@ -27,6 +29,7 @@ PrivateRTB.prototype.perform = function(video) {
 		cmd.maxDownLink = -1.0;
 	}
 	var url = this.url;
+    var video = this.video;
 	var self = this;
     if (typeof navigator.geolocation != 'undefined') {
         navigator.geolocation.getCurrentPosition(function(position) {
@@ -45,7 +48,8 @@ PrivateRTB.prototype.doAjax = function(url,cmd,div, video) {
          data: JSON.stringify(cmd),
          success: function(data, textStatus, request){
            if (request.status == 204) {
-           	alert("No bid returned, so nothing changes");
+            if (typeof this.nobid != 'undefined')
+           		this.nobid();
            	return;
            } else {
            	text = request.responseText;
