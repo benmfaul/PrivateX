@@ -1,7 +1,7 @@
 package com.xrtb.privatex;
 
 /**
- * A Class that encapsulates the JSON from the PrivateX API
+ * A Class that encapsulates the JSON API from the PrivateX API
  * @author Ben M. Faul
  *
  */
