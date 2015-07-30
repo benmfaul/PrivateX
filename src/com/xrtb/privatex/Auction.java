@@ -29,7 +29,7 @@ import com.xrtb.privatex.cfg.Database;
  */
 public class Auction implements Runnable {
 	/** Command object from the web page auction request */
-	Command cmd;
+	API cmd;
 	/** The campaign to use on the request */
 	Campaign campaign;
 	/** The user agent of the web user */
@@ -62,7 +62,7 @@ public class Auction implements Runnable {
 	 * @param loc LatLong. The lat/long of the user.
 	 * @param ipAddr String. The IP address of the web user.
 	 */
-	public Auction(Command cmd, Publisher publisher, Campaign campaign, String ipAddr) throws Exception {
+	public Auction(API cmd, Publisher publisher, Campaign campaign, String ipAddr) throws Exception {
 		this.cmd = cmd;
 		this.campaign = campaign;
 		this.ipAddr = ipAddr;

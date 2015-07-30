@@ -27,7 +27,7 @@ import com.google.gson.GsonBuilder;
 import com.xrtb.bidder.LogPublisher;
 import com.xrtb.commands.LogMessage;
 import com.xrtb.privatex.Campaign;
-import com.xrtb.privatex.Command;
+import com.xrtb.privatex.API;
 import com.xrtb.privatex.Publisher;
 import com.xrtb.privatex.Response;
 import com.xrtb.privatex.Subscriber;
@@ -101,7 +101,7 @@ public class Database {
 	}
 	
 	public void compile() {
-		Command cmd = new Command();
+		API cmd = new API();
 		Iterator it = publishers.entrySet().iterator();
 		for (Map.Entry<String, Publisher> ent : publishers.entrySet()) {
 			Publisher p = ent.getValue();

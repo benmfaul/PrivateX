@@ -7,7 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * A class that defines a web publisher
+ * A class that defines a web publisher.
  * @author Ben M. Faul
  *
  */

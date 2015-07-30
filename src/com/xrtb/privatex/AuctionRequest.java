@@ -51,7 +51,7 @@ public class AuctionRequest {
 	    	Database.log(5,"AUctionRequest/received message",gson.toJson(m));
 	    }
 		
-		Command cmd = mapper.readValue(x,Command.class);
+		API cmd = mapper.readValue(x,API.class);
 		
 		Publisher pub = Database.publishers.get(cmd.accountNumber);				/** Get the campaign id */
 		if (pub == null)
