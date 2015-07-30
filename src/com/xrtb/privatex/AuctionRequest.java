@@ -46,7 +46,7 @@ public class AuctionRequest {
 	    }
 	    String x = new String(resultBuff);
 		
-	    if (Database.logLevel >= 5) {
+	    if (Database.logLevel >= 5 || Database.logLevel <= -5) {
 	    	Map<?, ?> m = gson.fromJson(x,Map.class);
 	    	Database.log(5,"AUctionRequest/received message",gson.toJson(m));
 	    }

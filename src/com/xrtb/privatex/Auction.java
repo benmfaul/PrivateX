@@ -48,8 +48,10 @@ public class Auction implements Runnable {
 	volatile boolean running = true;
 	/** The ADM html */
 	String html;
+	/** The IP Address */
 	String ipAddr;
 	transient private ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+	/** The bid request object that will be generated for this auction */
 	PvtBidRequest pvt;
 	
 

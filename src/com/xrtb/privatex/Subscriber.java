@@ -196,8 +196,7 @@ public class Subscriber implements Runnable {
 		String adm = null;
 		try {
 			String nurl = bid.nurl;
-			//String s[] = nurl.split("http");
-			//nurl = "http" + s[1];
+			Database.log(5,"Subscriber:"+name+":doAdm","Notify the winning RTB: " + nurl);
 			adm = connection.sendGet(nurl);
 			Database.log(5,"Subscriber/doAdm:adm",adm);
 		} catch(Exception error) {
