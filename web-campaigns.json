@@ -11,7 +11,7 @@
                     "price": 10,
                     "served": 0,
                     "requested": 0,
-                    "page": "http://www.rtb4free/sample.html",
+                    "page": "http://www.rtb4free/banner-sample.html",
                     "attributes": [
                         "var Impression = Java.type('com.xrtb.privatex.bidrequest.Impression');",
                         "im = new Impression().doBanner();",
@@ -71,7 +71,7 @@
             "address": "the-address",
             "telephoneNumber": "tel-number",
             "accountNumber": "account-number",
-            "url": "http://localhost:8080/rtb/bids/nexage",
+            "url": "http://localhost:8080/rtb/bids/privatex",
             "maxConnections": 100,
             "maxRate": 1000
         }
