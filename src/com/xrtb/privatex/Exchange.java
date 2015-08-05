@@ -80,8 +80,10 @@ public class Exchange implements Runnable {
 			SessionHandler sh = new SessionHandler(); // org.eclipse.jetty.server.session.SessionHandler
 			sh.setHandler(handler);
 			server.setHandler(sh); // set session handle
-			db.log(0, "initialization",
+			db.log(2, "initialization",
 					("System start on port: " + db.port));
+			db.log(2, "initialization",
+					("System start with log level: " + db.logLevel));
 			server.start();
 			server.join();
 		} catch (Exception e) {
