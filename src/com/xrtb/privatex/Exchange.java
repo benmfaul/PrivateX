@@ -39,7 +39,6 @@ import com.xrtb.privatex.cfg.Database;
 
 public class Exchange implements Runnable {
 	Thread me;
-	int port = 8080;
 	Database db;
 
 	/**
@@ -75,14 +74,14 @@ public class Exchange implements Runnable {
 	public void run() {
 		Server server = new Server(db.port);
 		server.setHandler(new ExchangeHandler());
-		Database.log(2,"Exchange/run","Starting on port " + port);
+		Database.log(2,"Exchange/run","Starting on port " + db.port);
 		try {
 			ExchangeHandler handler = new ExchangeHandler();
 			SessionHandler sh = new SessionHandler(); // org.eclipse.jetty.server.session.SessionHandler
 			sh.setHandler(handler);
 			server.setHandler(sh); // set session handle
 			db.log(0, "initialization",
-					("System start on port: " + port));
+					("System start on port: " + db.port));
 			server.start();
 			server.join();
 		} catch (Exception e) {
