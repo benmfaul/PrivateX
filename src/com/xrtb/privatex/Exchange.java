@@ -10,6 +10,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.servlet.MultipartConfigElement;
@@ -23,9 +25,10 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.session.SessionHandler;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.xrtb.bidder.Controller;
 import com.xrtb.bidder.MimeTypes;
-import com.xrtb.bidder.RTBServer;
 import com.xrtb.bidder.WebCampaign;
 import com.xrtb.privatex.cfg.Database;
 
@@ -39,7 +42,11 @@ import com.xrtb.privatex.cfg.Database;
 
 public class Exchange implements Runnable {
 	Thread me;
-	Database db;
+	static Database db;
+	
+	static long nobids;
+	static long bids;
+	static long auctions;
 
 	/**
 	 * Creates the default exchange
@@ -74,14 +81,13 @@ public class Exchange implements Runnable {
 	public void run() {
 		Server server = new Server(db.port);
 		server.setHandler(new ExchangeHandler());
-		Database.log(2,"Exchange/run","Starting on port " + db.port);
+		Database.log(2, "Exchange/run", "Starting on port " + db.port);
 		try {
 			ExchangeHandler handler = new ExchangeHandler();
 			SessionHandler sh = new SessionHandler(); // org.eclipse.jetty.server.session.SessionHandler
 			sh.setHandler(handler);
 			server.setHandler(sh); // set session handle
-			db.log(2, "initialization",
-					("System start on port: " + db.port));
+			db.log(2, "initialization", ("System start on port: " + db.port));
 			db.log(2, "initialization",
 					("System start with log level: " + db.logLevel));
 			server.start();
@@ -103,9 +109,23 @@ public class Exchange implements Runnable {
  */
 @MultipartConfig
 class ExchangeHandler extends AbstractHandler {
-	
+
 	private static final MultipartConfigElement MULTI_PART_CONFIG = new MultipartConfigElement(
 			System.getProperty("java.io.tmpdir"));
+
+	private static final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+	
+	Map getInfo() {
+		Map map = new HashMap();
+		map.put("auctions", Exchange.auctions);
+		map.put("bids",Exchange.bids);
+		map.put("nobids",Exchange.nobids);
+		map.put("loglevel", Exchange.db.logLevel);
+		
+		return map;
+	}
+	
+	
 	@Override
 	public void handle(String target, Request baseRequest,
 			HttpServletRequest request, HttpServletResponse response)
@@ -126,15 +146,26 @@ class ExchangeHandler extends AbstractHandler {
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
 
-		Database.log(5,"ExchageHandler/handle",target);
-		
+		Database.log(5, "ExchageHandler/handle", target);
+
 		try {
 			if (target.contains("auction")) {
+				Exchange.auctions++;
 				html = new AuctionRequest(body, ipAddress).process();
-				if (html == null || html.length() == 0)
+				if (html == null || html.length() == 0) {
+					Exchange.nobids++;
 					code = 204;
+				} else 
+					Exchange.bids++;
+			}  else if (target.equals("/info")) {
+				html = gson.toJson(getInfo());
+				response.setContentType("application/json");
+				response.setStatus(HttpServletResponse.SC_OK);
+				baseRequest.setHandled(true);
+				response.getWriter().println(html);
+				return;
 			} else {
-				//target = target = target.replaceAll("xrtb/simulator/", "");
+				// target = target = target.replaceAll("xrtb/simulator/", "");
 				int x = target.lastIndexOf(".");
 				if (x >= 0) {
 					type = target.substring(x);
@@ -179,40 +210,40 @@ class ExchangeHandler extends AbstractHandler {
 							}
 						}
 					}
-						FileInputStream fis = new FileInputStream(f);
-						OutputStream out = response.getOutputStream();
+					FileInputStream fis = new FileInputStream(f);
+					OutputStream out = response.getOutputStream();
 
-						// write to out output stream
-						while (true) {
-							int bytedata = fis.read();
+					// write to out output stream
+					while (true) {
+						int bytedata = fis.read();
 
-							if (bytedata == -1) {
-								break;
-							}
-
-							try {
-								out.write(bytedata);
-							} catch (Exception error) {
-								break; // screw it, pray that it worked....
-							}
+						if (bytedata == -1) {
+							break;
 						}
 
-						// flush and close streams.....
-						fis.close();
 						try {
-							out.close();
+							out.write(bytedata);
 						} catch (Exception error) {
-
+							break; // screw it, pray that it worked....
 						}
-						return;
-
 					}
 
+					// flush and close streams.....
+					fis.close();
+					try {
+						out.close();
+					} catch (Exception error) {
+
+					}
+					return;
+
+				}
+
 				/**
-				 * Ok, we don't have a .type on the file, so we are assuming .html
+				 * Ok, we don't have a .type on the file, so we are assuming
+				 * .html
 				 */
 				target = "www" + target;
-
 
 				String page = Charset
 						.defaultCharset()
@@ -223,9 +254,8 @@ class ExchangeHandler extends AbstractHandler {
 				response.setStatus(HttpServletResponse.SC_OK);
 				baseRequest.setHandled(true);
 				response.getWriter().println(page);
-				RTBServer.concurrentConnections--;
 
-				////////////////////////
+				// //////////////////////
 			}
 
 		} catch (Exception e) {
