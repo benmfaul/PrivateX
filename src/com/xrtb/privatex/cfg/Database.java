@@ -17,11 +17,11 @@ import java.util.concurrent.ConcurrentMap;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.redisson.Config;
 import org.redisson.Redisson;
 import org.redisson.core.RList;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.xrtb.bidder.LogPublisher;
@@ -31,8 +31,6 @@ import com.xrtb.privatex.API;
 import com.xrtb.privatex.Publisher;
 import com.xrtb.privatex.Response;
 import com.xrtb.privatex.Subscriber;
-import com.xrtb.privatex.bidrequest.Banner;
-import com.xrtb.privatex.bidrequest.Impression;
 import com.xrtb.privatex.bidrequest.PvtBidRequest;
 
 /**

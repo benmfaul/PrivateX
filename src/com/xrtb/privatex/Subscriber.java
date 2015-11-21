@@ -1,20 +1,18 @@
 package com.xrtb.privatex;
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.redisson.core.MessageListener;
 import org.redisson.core.RBucket;
 import org.redisson.core.RCountDownLatch;
 import org.redisson.core.RList;
 import org.redisson.core.RTopic;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.xrtb.common.HttpPostGet;
-
 import com.xrtb.privatex.bidresponse.Bid;
 import com.xrtb.privatex.bidresponse.Body;
 import com.xrtb.privatex.cfg.Database;
@@ -105,7 +103,7 @@ public class Subscriber implements Runnable {
 			 * Request to send bids
 			 */
 			@Override
-			public void onMessage(Request r) {
+			public void onMessage(String channel, Request r) {
 				requests.add(r);			
 			}
 		});
@@ -116,7 +114,7 @@ public class Subscriber implements Runnable {
 			 * Request to send bids
 			 */
 			@Override
-			public void onMessage(Response r) {
+			public void onMessage(String channel, Response r) {
 				winners.add(r);				
 			}
 		});

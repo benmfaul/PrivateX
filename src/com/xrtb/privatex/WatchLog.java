@@ -48,7 +48,7 @@ public class WatchLog {
 	     RTopic<LogMessage> responses = redisson.getTopic(channel);
 	     responses.addListener(new MessageListener<LogMessage>() {
 	         @Override
-	         public void onMessage(LogMessage msg) {
+	         public void onMessage(String chan, LogMessage msg) {
 	        	 if (watch == -1 || msg.sev <= watch)
 	        		 System.out.format("%d - %s - %s - %s\n",msg.sev,msg.source,msg.field,msg.message);
 	         }
